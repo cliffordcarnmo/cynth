@@ -1,13 +1,15 @@
 	*= $0801
-
+	
 	!addr keycode = $40
 	!addr offset = $42
 	!addr notelow = $44
 	!addr notehigh = $46
 	!addr octave = $48
-	!addr notes = $1000
 
-	;lower keys note offsets
+	lda #42
+	sta octave ;2*24 (12 note frequencies * 2 bytes(high/low))
+
+	;lower keys note pointer offsets
 	lda #00
 	sta $0c ;z
 	lda #02
@@ -33,7 +35,7 @@
 	lda #22
 	sta $24 ;m
 
-	;upper keys note offsets
+	;upper keys note pointer offsets
 	lda #24
 	sta $3e ;q
 	lda #26
@@ -101,13 +103,7 @@ irq:
 
 	asl $d019
 
-	lda #$37
-	sta $01
-	jsr getkey
-
-	lda #$35
-	sta $01
-	jsr updateui
+	jsr cynth
 
 	pla
 	tay
@@ -117,8 +113,14 @@ irq:
 
 	rti
 
-getkey:
+cynth:
+	lda #$37
+	sta $01
+
 	jsr $ff9f
+
+	lda #$35
+	sta $01
 
 	lda $cb
 	sta keycode
@@ -138,23 +140,19 @@ keyup:
 keydown:
 	jsr getnote
 	jsr playnote
-
+	jsr updateui
 	rts
 
 getnote:
 	ldy #$00
 	lda (keycode), y
-	adc #42 ;hardcoded offset for now
-	sta offset
-
+	adc octave
 	tax
 
-	lda notes,x
+	lda frequencies,x
 	sta notelow
 
-	inx
-
-	lda notes,x
+	lda frequencies+1,x
 	sta notehigh
 
 	rts
@@ -188,7 +186,8 @@ updateui:
 	rts
 
 	*= $1000
-	!word $022d ;c-1 2d = $1000, 02 = $1001
+frequencies:
+	!word $022d ;c-1
 	!word $024e ;c#1
 	!word $0271 ;d-1
 	!word $0296 ;d#1
@@ -199,9 +198,9 @@ updateui:
 	!word $0374 ;g#1
 	!word $03a9 ;a-1
 	!word $03e0 ;a#1
-	!word $041b ;b-1 04 = $1017, 1b = $1016
+	!word $041b ;b-1
 
-	!word $045a ;c-2 04 = $1019, 5a = $1018
+	!word $045a ;c-2
 	!word $049c ;c#2
 	!word $04e2 ;d-2
 	!word $052c ;d#2
@@ -212,7 +211,7 @@ updateui:
 	!word $06e8 ;g#2
 	!word $0751 ;a-2
 	!word $07c1 ;a#2
-	!word $0837 ;b-2 08 = $102f, 37 = $102e
+	!word $0837 ;b-2
 
 	!word $08b4 ;c-3
 	!word $0938 ;c#3

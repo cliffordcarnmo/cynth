@@ -1,0 +1,30 @@
+CLEAN=rm
+CLEANARGS=-f
+BUILDPATH=build
+BUILD=cynth.prg
+SOURCEPATH=src
+SOURCE=cynth.asm
+COMPILERPATH=bin
+COMPILER=acme
+COMPILERREPORT=buildreport
+COMPILERSYMBOLS=symbols
+COMPILERARGS=-r $(BUILDPATH)/$(COMPILERREPORT) --vicelabels $(BUILDPATH)/$(COMPILERSYMBOLS) --msvc --color --format cbm -v3 --outfile
+CRUNCHERPATH=bin
+CRUNCHER=pucrunch
+CRUNCHERARGS=-x0x0801 -c64 -fshort
+EMULATOR=bin/c64debugger
+#EMULATORARGS=-layout 2 -symbols build/symbols
+
+all: compile crunch run
+
+clean:
+	$(CLEAN) $(CLEANARGS) $(BUILDPATH)/*
+
+compile:
+	$(COMPILERPATH)/$(COMPILER) $(COMPILERARGS) $(BUILDPATH)/$(BUILD) $(SOURCEPATH)/$(SOURCE)
+
+crunch:
+	$(CRUNCHERPATH)/$(CRUNCHER) $(CRUNCHERARGS) $(BUILDPATH)/$(BUILD) $(BUILDPATH)/$(BUILD)
+
+run:
+	$(EMULATOR) $(EMULATORARGS) $(BUILDPATH)/$(BUILD)

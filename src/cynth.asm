@@ -1,5 +1,5 @@
 	*= $0801
-	
+
 	!addr keycode = $40
 	!addr offset = $42
 	!addr notelow = $44
@@ -128,24 +128,40 @@ cynth:
 	cmp #$40
 	bne keydown
 	beq keyup
-
+	
 	rts
 
 keyup:
 	lda #16
 	sta $d404
-
+	
 	rts
 
 keydown:
 	jsr getnote
 	jsr playnote
 	jsr updateui
+	
+	rts
+
+octaveup:
+	lda octave
+	adc #24
+	sta octave
+
+	rts
+
+octavedown:
+	lda octave
+	sbc #24
+	sta octave
+	
 	rts
 
 getnote:
 	ldy #$00
 	lda (keycode), y
+	sta offset
 	adc octave
 	tax
 
@@ -180,6 +196,7 @@ playnote:
 
 updateui:
 	lda keycode
+	adc #1
 	sta $d020
 	sta $d021
 
@@ -237,7 +254,7 @@ frequencies:
 	!word $1ba0 ;g#4
 	!word $1d44 ;a-4
 	!word $1f02 ;a#4
-	!word $20da ;b-4 
+	!word $20da ;b-4
 
 	!word $22ce ;c-5
 	!word $24e0 ;c#5
@@ -250,7 +267,7 @@ frequencies:
 	!word $3740 ;g#5
 	!word $3a89 ;a-5
 	!word $3e04 ;a#5
-	!word $41b4 ;b-5 
+	!word $41b4 ;b-5
 
 	!word $459c ;c-6
 	!word $49c0 ;c#6

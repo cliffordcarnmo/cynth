@@ -1,277 +1,337 @@
 
 ; ******** Source: src/cynth.asm
      1                          	*= $0801
-     2                          
-     3                          	!addr keycode = $40
-     4                          	!addr offset = $42
-     5                          	!addr notelow = $44
-     6                          	!addr notehigh = $46
-     7                          	!addr octave = $48
-     8                          
-     9  0801 a92a               	lda #42
-    10  0803 8548               	sta octave ;2*24 (12 note frequencies * 2 bytes(high/low))
-    11                          
-    12                          	;lower keys note pointer offsets
-    13  0805 a900               	lda #00
-    14  0807 850c               	sta $0c ;z
-    15  0809 a902               	lda #02
-    16  080b 850d               	sta $0d ;s
-    17  080d a904               	lda #04
-    18  080f 8517               	sta $17 ;x
-    19  0811 a906               	lda #06
-    20  0813 8512               	sta $12 ;d
-    21  0815 a908               	lda #08
-    22  0817 8514               	sta $14 ;c
-    23  0819 a90a               	lda #10
-    24  081b 851f               	sta $1f ;v
-    25  081d a90c               	lda #12
-    26  081f 851a               	sta $1a ;g
-    27  0821 a90e               	lda #14
-    28  0823 851c               	sta $1c ;b
-    29  0825 a910               	lda #16
-    30  0827 851d               	sta $1d ;h
-    31  0829 a912               	lda #18
-    32  082b 8527               	sta $27 ;n
-    33  082d a914               	lda #20
-    34  082f 8522               	sta $22 ;j
-    35  0831 a916               	lda #22
-    36  0833 8524               	sta $24 ;m
-    37                          
-    38                          	;upper keys note pointer offsets
-    39  0835 a918               	lda #24
-    40  0837 853e               	sta $3e ;q
-    41  0839 a91a               	lda #26
-    42  083b 853b               	sta $3b ;2
-    43  083d a91c               	lda #28
-    44  083f 8509               	sta $09 ;w
-    45  0841 a91e               	lda #30
-    46  0843 8508               	sta $08 ;3
-    47  0845 a920               	lda #32
-    48  0847 850e               	sta $0e ;e
-    49  0849 a922               	lda #34
-    50  084b 8511               	sta $11 ;r
-    51  084d a924               	lda #36
-    52  084f 8510               	sta $10 ;5
-    53  0851 a926               	lda #38
-    54  0853 8516               	sta $16 ;t
-    55  0855 a928               	lda #40
-    56  0857 8513               	sta $13 ;6
-    57  0859 a92a               	lda #42
-    58  085b 8519               	sta $19 ;y
-    59  085d a92c               	lda #44
-    60  085f 8518               	sta $18 ;7
-    61  0861 a92e               	lda #46
-    62  0863 851e               	sta $1e ;u
-    63                          
-    64  0865 2044e5             	jsr $e544
-    65                          
-    66  0868 a935               	lda #$35
-    67  086a 8501               	sta $01
+     2                          	!addr keycode = $40
+     3                          	!addr offset = $42
+     4                          	!addr notelow = $44
+     5                          	!addr notehigh = $46
+     6                          	!addr octave = $48
+     7                          	!addr counter = $4a
+     8                          	!addr keypressed = $4c
+     9                          
+    10  0801 a930               	lda #48
+    11  0803 8548               	sta octave ;2*24 (12 note frequencies * 2 bytes(high/low))
+    12                          
+    13                          	;lower keys note pointer offsets
+    14  0805 a900               	lda #00
+    15  0807 850c               	sta $0c ;z
+    16  0809 a902               	lda #02
+    17  080b 850d               	sta $0d ;s
+    18  080d a904               	lda #04
+    19  080f 8517               	sta $17 ;x
+    20  0811 a906               	lda #06
+    21  0813 8512               	sta $12 ;d
+    22  0815 a908               	lda #08
+    23  0817 8514               	sta $14 ;c
+    24  0819 a90a               	lda #10
+    25  081b 851f               	sta $1f ;v
+    26  081d a90c               	lda #12
+    27  081f 851a               	sta $1a ;g
+    28  0821 a90e               	lda #14
+    29  0823 851c               	sta $1c ;b
+    30  0825 a910               	lda #16
+    31  0827 851d               	sta $1d ;h
+    32  0829 a912               	lda #18
+    33  082b 8527               	sta $27 ;n
+    34  082d a914               	lda #20
+    35  082f 8522               	sta $22 ;j
+    36  0831 a916               	lda #22
+    37  0833 8524               	sta $24 ;m
+    38                          
+    39                          	;upper keys note pointer offsets
+    40  0835 a918               	lda #24
+    41  0837 853e               	sta $3e ;q
+    42  0839 a91a               	lda #26
+    43  083b 853b               	sta $3b ;2
+    44  083d a91c               	lda #28
+    45  083f 8509               	sta $09 ;w
+    46  0841 a91e               	lda #30
+    47  0843 8508               	sta $08 ;3
+    48  0845 a920               	lda #32
+    49  0847 850e               	sta $0e ;e
+    50  0849 a922               	lda #34
+    51  084b 8511               	sta $11 ;r
+    52  084d a924               	lda #36
+    53  084f 8510               	sta $10 ;5
+    54  0851 a926               	lda #38
+    55  0853 8516               	sta $16 ;t
+    56  0855 a928               	lda #40
+    57  0857 8513               	sta $13 ;6
+    58  0859 a92a               	lda #42
+    59  085b 8519               	sta $19 ;y
+    60  085d a92c               	lda #44
+    61  085f 8518               	sta $18 ;7
+    62  0861 a92e               	lda #46
+    63  0863 851e               	sta $1e ;u
+    64                          
+    65  0865 a900               	lda #$00
+    66  0867 8d20d0             	sta $d020
+    67  086a 8d21d0             	sta $d021
     68                          
-    69  086c 78                 	sei
-    70                          
-    71  086d a97f               	lda #$7f
-    72  086f 8d0ddc             	sta $dc0d
-    73  0872 8d0ddd             	sta $dd0d
-    74                          
-    75  0875 ad0ddc             	lda $dc0d
-    76  0878 ad0ddd             	lda $dd0d
+    69  086d a935               	lda #$35
+    70  086f 8501               	sta $01
+    71                          
+    72  0871 78                 	sei
+    73                          
+    74  0872 a97f               	lda #$7f
+    75  0874 8d0ddc             	sta $dc0d
+    76  0877 8d0ddd             	sta $dd0d
     77                          
-    78  087b a901               	lda #$01
-    79  087d 8d1ad0             	sta $d01a
+    78  087a ad0ddc             	lda $dc0d
+    79  087d ad0ddd             	lda $dd0d
     80                          
-    81  0880 a91b               	lda #$1b
-    82  0882 8d11d0             	sta $d011
+    81  0880 a901               	lda #$01
+    82  0882 8d1ad0             	sta $d01a
     83                          
-    84  0885 a900               	lda #$00
-    85  0887 8d12d0             	sta $d012
+    84  0885 a91b               	lda #$1b
+    85  0887 8d11d0             	sta $d011
     86                          
-    87  088a a998               	lda #<irq
-    88  088c 8dfeff             	sta $fffe
-    89  088f a908               	lda #>irq
-    90  0891 8dffff             	sta $ffff
-    91                          
-    92  0894 58                 	cli
-    93                          
-    94                          mainloop:
-    95  0895 4c9508             	jmp mainloop
+    87  088a a900               	lda #$00
+    88  088c 8d12d0             	sta $d012
+    89                          
+    90  088f a99d               	lda #<irq
+    91  0891 8dfeff             	sta $fffe
+    92  0894 a908               	lda #>irq
+    93  0896 8dffff             	sta $ffff
+    94                          
+    95  0899 58                 	cli
     96                          
-    97                          irq:
-    98  0898 48                 	pha
-    99  0899 8a                 	txa
-   100  089a 48                 	pha
-   101  089b 98                 	tya
-   102  089c 48                 	pha
-   103                          
-   104  089d 0e19d0             	asl $d019
-   105                          
-   106  08a0 20a908             	jsr cynth
-   107                          
-   108  08a3 68                 	pla
-   109  08a4 a8                 	tay
-   110  08a5 68                 	pla
-   111  08a6 aa                 	tax
-   112  08a7 68                 	pla
-   113                          
-   114  08a8 40                 	rti
-   115                          
-   116                          cynth:
-   117  08a9 a937               	lda #$37
-   118  08ab 8501               	sta $01
-   119                          
-   120  08ad 209fff             	jsr $ff9f
-   121                          
-   122  08b0 a935               	lda #$35
-   123  08b2 8501               	sta $01
+    97                          mainloop:
+    98  089a 4c9a08             	jmp mainloop
+    99                          
+   100                          irq:
+   101  089d 48                 	pha
+   102  089e 8a                 	txa
+   103  089f 48                 	pha
+   104  08a0 98                 	tya
+   105  08a1 48                 	pha
+   106                          
+   107  08a2 0e19d0             	asl $d019
+   108                          
+   109  08a5 20ae08             	jsr cynth
+   110                          
+   111  08a8 68                 	pla
+   112  08a9 a8                 	tay
+   113  08aa 68                 	pla
+   114  08ab aa                 	tax
+   115  08ac 68                 	pla
+   116                          
+   117  08ad 40                 	rti
+   118                          
+   119                          cynth:
+   120  08ae a937               	lda #$37
+   121  08b0 8501               	sta $01
+   122                          
+   123  08b2 209fff             	jsr $ff9f
    124                          
-   125  08b4 a5cb               	lda $cb
-   126  08b6 8540               	sta keycode
+   125  08b5 a935               	lda #$35
+   126  08b7 8501               	sta $01
    127                          
-   128  08b8 c940               	cmp #$40
-   129  08ba d009               	bne keydown
-   130  08bc f001               	beq keyup
-   131                          	
-   132  08be 60                 	rts
+   128  08b9 a5cb               	lda $cb
+   129  08bb 8540               	sta keycode
+   130                          
+   131  08bd c92b               	cmp #$2b
+   132  08bf f027               	beq octaveup
    133                          
-   134                          keyup:
-   135  08bf a910               	lda #16
-   136  08c1 8d04d4             	sta $d404
-   137                          	
-   138  08c4 60                 	rts
-   139                          
-   140                          keydown:
-   141  08c5 20dd08             	jsr getnote
-   142  08c8 20f108             	jsr playnote
-   143  08cb 201009             	jsr updateui
-   144                          	
-   145  08ce 60                 	rts
-   146                          
-   147                          octaveup:
-   148  08cf a548               	lda octave
-   149  08d1 6918               	adc #24
-   150  08d3 8548               	sta octave
-   151                          
-   152  08d5 60                 	rts
-   153                          
-   154                          octavedown:
-   155  08d6 a548               	lda octave
-   156  08d8 e918               	sbc #24
-   157  08da 8548               	sta octave
-   158                          	
-   159  08dc 60                 	rts
+   134  08c1 c92c               	cmp #$2c
+   135  08c3 f02a               	beq octavedown
+   136                          
+   137  08c5 c940               	cmp #$40
+   138  08c7 d00f               	bne keydown
+   139  08c9 f001               	beq keyup
+   140                          	
+   141  08cb 60                 	rts
+   142                          
+   143                          keyup:
+   144  08cc a900               	lda #$00
+   145  08ce 854c               	sta keypressed
+   146  08d0 854a               	sta counter
+   147                          	
+   148  08d2 a910               	lda #16
+   149  08d4 8d04d4             	sta $d404
+   150                          
+   151  08d7 60                 	rts
+   152                          
+   153                          keydown:
+   154  08d8 a901               	lda #$01
+   155  08da 854c               	sta keypressed
+   156                          	
+   157  08dc 20f608             	jsr getnote
+   158  08df 200a09             	jsr playnote
+   159  08e2 202909             	jsr updateui
    160                          
-   161                          getnote:
-   162  08dd a000               	ldy #$00
-   163  08df b140               	lda (keycode), y
-   164  08e1 8542               	sta offset
-   165  08e3 6548               	adc octave
-   166  08e5 aa                 	tax
-   167                          
-   168  08e6 bd0010             	lda frequencies,x
-   169  08e9 8544               	sta notelow
-   170                          
-   171  08eb bd0110             	lda frequencies+1,x
-   172  08ee 8546               	sta notehigh
-   173                          
-   174  08f0 60                 	rts
-   175                          
-   176                          playnote:
-   177  08f1 a90f               	lda #$0f
-   178  08f3 8d18d4             	sta $d418 ;volume
-   179                          
-   180  08f6 a911               	lda #17
-   181  08f8 8d04d4             	sta $d404 ;control register voice 1
-   182                          
-   183  08fb a900               	lda #$00
-   184  08fd 8d05d4             	sta $d405 ;attack/decay
+   161  08e5 e64a               	inc counter
+   162                          
+   163  08e7 60                 	rts
+   164                          
+   165                          octaveup:
+   166  08e8 a548               	lda octave
+   167  08ea 6918               	adc #24
+   168  08ec 8548               	sta octave
+   169                          
+   170  08ee 60                 	rts
+   171                          
+   172                          octavedown:
+   173  08ef a548               	lda octave
+   174  08f1 e918               	sbc #24
+   175  08f3 8548               	sta octave
+   176                          	
+   177  08f5 60                 	rts
+   178                          
+   179                          getnote:
+   180  08f6 a000               	ldy #$00
+   181  08f8 b140               	lda (keycode), y
+   182  08fa 8542               	sta offset
+   183  08fc 6548               	adc octave
+   184  08fe aa                 	tax
    185                          
-   186  0900 a9fa               	lda #250
-   187  0902 8d06d4             	sta $d406 ;sustain/release
+   186  08ff bd0010             	lda frequencies,x
+   187  0902 8544               	sta notelow
    188                          
-   189  0905 a544               	lda notelow
-   190  0907 8d00d4             	sta $d400 ;voice 1 frequency low
+   189  0904 bd0110             	lda frequencies+1,x
+   190  0907 8546               	sta notehigh
    191                          
-   192  090a a546               	lda notehigh
-   193  090c 8d01d4             	sta $d401 ;voice 1 frequency high
-   194                          
-   195  090f 60                 	rts
-   196                          
-   197                          updateui:
-   198  0910 a540               	lda keycode
-   199  0912 6901               	adc #1
-   200  0914 8d20d0             	sta $d020
-   201  0917 8d21d0             	sta $d021
-   202                          
-   203  091a 60                 	rts
-   204                          
-   205                          	*= $1000
-   206                          frequencies:
-   207  1000 2d02               	!word $022d ;c-1
-   208  1002 4e02               	!word $024e ;c#1
-   209  1004 7102               	!word $0271 ;d-1
-   210  1006 9602               	!word $0296 ;d#1
-   211  1008 be02               	!word $02be ;e-1
-   212  100a e702               	!word $02e7 ;f-1
-   213  100c 1403               	!word $0314 ;f#1
-   214  100e 4203               	!word $0342 ;g-1
-   215  1010 7403               	!word $0374 ;g#1
-   216  1012 a903               	!word $03a9 ;a-1
-   217  1014 e003               	!word $03e0 ;a#1
-   218  1016 1b04               	!word $041b ;b-1
-   219                          
-   220  1018 5a04               	!word $045a ;c-2
-   221  101a 9c04               	!word $049c ;c#2
-   222  101c e204               	!word $04e2 ;d-2
-   223  101e 2c05               	!word $052c ;d#2
-   224  1020 7b05               	!word $057b ;e-2
-   225  1022 cf05               	!word $05cf ;f-2
-   226  1024 2706               	!word $0627 ;f#2
-   227  1026 8506               	!word $0685 ;g-2
-   228  1028 e806               	!word $06e8 ;g#2
-   229  102a 5107               	!word $0751 ;a-2
-   230  102c c107               	!word $07c1 ;a#2
-   231  102e 3708               	!word $0837 ;b-2
-   232                          
-   233  1030 b408               	!word $08b4 ;c-3
-   234  1032 3809               	!word $0938 ;c#3
-   235  1034 c409               	!word $09c4 ;d-3
-   236  1036 590a               	!word $0a59 ;d#3
-   237  1038 f70a               	!word $0af7 ;e-3
-   238  103a 9d0b               	!word $0b9d ;f-3
-   239  103c 4e0c               	!word $0c4e ;f#3
-   240  103e 0a0d               	!word $0d0a ;g-3
-   241  1040 d00d               	!word $0dd0 ;g#3
-   242  1042 a20e               	!word $0ea2 ;a-3
-   243  1044 810f               	!word $0f81 ;a#3
-   244  1046 6d10               	!word $106d ;b-3
-   245                          
-   246  1048 6711               	!word $1167 ;c-4
-   247  104a 7012               	!word $1270 ;c#4
-   248  104c 8913               	!word $1389 ;d-4
-   249  104e b214               	!word $14b2 ;d#4
-   250  1050 ed15               	!word $15ed ;e-4
-   251  1052 3b17               	!word $173b ;f-4
-   252  1054 9c18               	!word $189c ;f#4
-   253  1056 131a               	!word $1a13 ;g-4
-   254  1058 a01b               	!word $1ba0 ;g#4
-   255  105a 441d               	!word $1d44 ;a-4
-   256  105c 021f               	!word $1f02 ;a#4
-   257  105e da20               	!word $20da ;b-4
-   258                          
-   259  1060 ce22               	!word $22ce ;c-5
-   260  1062 e024               	!word $24e0 ;c#5
-   261  1064 1127               	!word $2711 ;d-5
-   262  1066 6429               	!word $2964 ;d#5
-   263  1068 da2b               	!word $2bda ;e-5
-   264  106a 762e               	!word $2e76 ;f-5
-   265  106c 3931               	!word $3139 ;f#5
-   266  106e 2634               	!word $3426 ;g-5
-   267  1070 4037               	!word $3740 ;g#5
-   268  1072 893a               	!word $3a89 ;a-5
-   269  1074 043e               	!word $3e04 ;a#5
-   270  1076 b441               	!word $41b4 ;b-5
-   271                          
-   272  1078 9c45               	!word $459c ;c-6
-   273  107a c049               	!word $49c0 ;c#6
-   274  107c 234e               	!word $4e23 ;d-6
-   275  107e c852               	!word $52c8 ;d#6
+   192  0909 60                 	rts
+   193                          
+   194                          playnote:
+   195  090a a90f               	lda #$0f
+   196  090c 8d18d4             	sta $d418 ;volume
+   197                          
+   198  090f a911               	lda #17
+   199  0911 8d04d4             	sta $d404 ;control register voice 1
+   200                          
+   201  0914 a900               	lda #$00
+   202  0916 8d05d4             	sta $d405 ;attack/decay
+   203                          
+   204  0919 a9fa               	lda #250
+   205  091b 8d06d4             	sta $d406 ;sustain/release
+   206                          
+   207  091e a544               	lda notelow
+   208  0920 8d00d4             	sta $d400 ;voice 1 frequency low
+   209                          
+   210  0923 a546               	lda notehigh
+   211  0925 8d01d4             	sta $d401 ;voice 1 frequency high
+   212                          
+   213  0928 60                 	rts
+   214                          
+   215                          updateui:
+   216  0929 a540               	lda keycode
+   217  092b 8d20d0             	sta $d020
+   218                          	
+   219  092e a900               	lda #$00
+   220  0930 8d21d0             	sta $d021
+   221                          
+   222  0933 60                 	rts
+   223                          
+   224                          	*= $1000
+   225                          frequencies:
+   226  1000 2d02               	!word $022d ;c-1
+   227  1002 4e02               	!word $024e ;c#1
+   228  1004 7102               	!word $0271 ;d-1
+   229  1006 9602               	!word $0296 ;d#1
+   230  1008 be02               	!word $02be ;e-1
+   231  100a e702               	!word $02e7 ;f-1
+   232  100c 1403               	!word $0314 ;f#1
+   233  100e 4203               	!word $0342 ;g-1
+   234  1010 7403               	!word $0374 ;g#1
+   235  1012 a903               	!word $03a9 ;a-1
+   236  1014 e003               	!word $03e0 ;a#1
+   237  1016 1b04               	!word $041b ;b-1
+   238                          
+   239  1018 5a04               	!word $045a ;c-2
+   240  101a 9c04               	!word $049c ;c#2
+   241  101c e204               	!word $04e2 ;d-2
+   242  101e 2c05               	!word $052c ;d#2
+   243  1020 7b05               	!word $057b ;e-2
+   244  1022 cf05               	!word $05cf ;f-2
+   245  1024 2706               	!word $0627 ;f#2
+   246  1026 8506               	!word $0685 ;g-2
+   247  1028 e806               	!word $06e8 ;g#2
+   248  102a 5107               	!word $0751 ;a-2
+   249  102c c107               	!word $07c1 ;a#2
+   250  102e 3708               	!word $0837 ;b-2
+   251                          
+   252  1030 b408               	!word $08b4 ;c-3
+   253  1032 3809               	!word $0938 ;c#3
+   254  1034 c409               	!word $09c4 ;d-3
+   255  1036 590a               	!word $0a59 ;d#3
+   256  1038 f70a               	!word $0af7 ;e-3
+   257  103a 9d0b               	!word $0b9d ;f-3
+   258  103c 4e0c               	!word $0c4e ;f#3
+   259  103e 0a0d               	!word $0d0a ;g-3
+   260  1040 d00d               	!word $0dd0 ;g#3
+   261  1042 a20e               	!word $0ea2 ;a-3
+   262  1044 810f               	!word $0f81 ;a#3
+   263  1046 6d10               	!word $106d ;b-3
+   264                          
+   265  1048 6711               	!word $1167 ;c-4
+   266  104a 7012               	!word $1270 ;c#4
+   267  104c 8913               	!word $1389 ;d-4
+   268  104e b214               	!word $14b2 ;d#4
+   269  1050 ed15               	!word $15ed ;e-4
+   270  1052 3b17               	!word $173b ;f-4
+   271  1054 9c18               	!word $189c ;f#4
+   272  1056 131a               	!word $1a13 ;g-4
+   273  1058 a01b               	!word $1ba0 ;g#4
+   274  105a 441d               	!word $1d44 ;a-4
+   275  105c 021f               	!word $1f02 ;a#4
+   276  105e da20               	!word $20da ;b-4
+   277                          
+   278  1060 ce22               	!word $22ce ;c-5
+   279  1062 e024               	!word $24e0 ;c#5
+   280  1064 1127               	!word $2711 ;d-5
+   281  1066 6429               	!word $2964 ;d#5
+   282  1068 da2b               	!word $2bda ;e-5
+   283  106a 762e               	!word $2e76 ;f-5
+   284  106c 3931               	!word $3139 ;f#5
+   285  106e 2634               	!word $3426 ;g-5
+   286  1070 4037               	!word $3740 ;g#5
+   287  1072 893a               	!word $3a89 ;a-5
+   288  1074 043e               	!word $3e04 ;a#5
+   289  1076 b441               	!word $41b4 ;b-5
+   290                          
+   291  1078 9c45               	!word $459c ;c-6
+   292  107a c049               	!word $49c0 ;c#6
+   293  107c 234e               	!word $4e23 ;d-6
+   294  107e c852               	!word $52c8 ;d#6
+   295                          
+   296                          keys:
+   297  1080 032d               	!scr "c-"
+   298  1082 0323               	!scr "c#"
+   299  1084 042d               	!scr "d-"
+   300  1086 0423               	!scr "d#"
+   301  1088 052d               	!scr "e-"
+   302  108a 062d               	!scr "f-"
+   303  108c 0623               	!scr "f#"
+   304  108e 072d               	!scr "g-"
+   305  1090 0723               	!scr "g#"
+   306  1092 012d               	!scr "a-"
+   307  1094 0123               	!scr "a#"
+   308  1096 022d               	!scr "b-"
+   309                          	
+   310                          	*= $0400
+   311  0400 2020202020202020...	!scr "                                        "
+   312  0428 2020202020202020...	!scr "                                        "
+   313  0450 2020202020202020...	!scr "                                        "
+   314  0478 2020202020202020...	!scr "                                        "
+   315  04a0 2020202020202020...	!scr "                                        "
+   316  04c8 2020202020202020...	!scr "                                        "
+   317  04f0 2020202020202020...	!scr "                                        "
+   318  0518 2020202020202020...	!scr "                                        "
+   319  0540 2020202020202020...	!scr "                                        "
+   320  0568 2020202020202020...	!scr "                                        "
+   321  0590 2020202020202020...	!scr "                                        "
+   322  05b8 2020202020202020...	!scr "                                        "
+   323  05e0 2020202020202020...	!scr "                                        "
+   324  0608 2020202020202020...	!scr "                                        "
+   325  0630 2020202020202020...	!scr "                                        "
+   326  0658 2020202020202020...	!scr "                                        "
+   327  0680 2020202020202020...	!scr "                                        "
+   328  06a8 2020202020202020...	!scr "                                        "
+   329  06d0 2020202020202020...	!scr "                                        "
+   330  06f8 2020202020202020...	!scr "                                        "
+   331  0720 2020202020202020...	!scr "                                        "
+   332  0748 0315140f06063a30...	!scr "cutoff:00 resonance:00 filter:00        "
+   333  0770 01141401030b3a30...	!scr "attack:00 decay:00 sustain:00 release:00"
+   334  0798 17011605060f120d...	!scr "waveform:pulse lp:00 bp:00 hp:00        "
+   335  07c0 0b05193a30303020...	!scr "key:000 octave:0 frequency:0000 vol:16  "

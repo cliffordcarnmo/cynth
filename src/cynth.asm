@@ -1,12 +1,13 @@
 	*= $0801
-
 	!addr keycode = $40
 	!addr offset = $42
 	!addr notelow = $44
 	!addr notehigh = $46
 	!addr octave = $48
+	!addr counter = $4a
+	!addr keypressed = $4c
 
-	lda #42
+	lda #48
 	sta octave ;2*24 (12 note frequencies * 2 bytes(high/low))
 
 	;lower keys note pointer offsets
@@ -61,7 +62,9 @@
 	lda #46
 	sta $1e ;u
 
-	jsr $e544
+	lda #$00
+	sta $d020
+	sta $d021
 
 	lda #$35
 	sta $01
@@ -125,6 +128,12 @@ cynth:
 	lda $cb
 	sta keycode
 
+	cmp #$2b
+	beq octaveup
+
+	cmp #$2c
+	beq octavedown
+
 	cmp #$40
 	bne keydown
 	beq keyup
@@ -132,16 +141,25 @@ cynth:
 	rts
 
 keyup:
+	lda #$00
+	sta keypressed
+	sta counter
+	
 	lda #16
 	sta $d404
-	
+
 	rts
 
 keydown:
+	lda #$01
+	sta keypressed
+	
 	jsr getnote
 	jsr playnote
 	jsr updateui
-	
+
+	inc counter
+
 	rts
 
 octaveup:
@@ -196,8 +214,9 @@ playnote:
 
 updateui:
 	lda keycode
-	adc #1
 	sta $d020
+	
+	lda #$00
 	sta $d021
 
 	rts
@@ -273,3 +292,44 @@ frequencies:
 	!word $49c0 ;c#6
 	!word $4e23 ;d-6
 	!word $52c8 ;d#6
+
+keys:
+	!scr "c-"
+	!scr "c#"
+	!scr "d-"
+	!scr "d#"
+	!scr "e-"
+	!scr "f-"
+	!scr "f#"
+	!scr "g-"
+	!scr "g#"
+	!scr "a-"
+	!scr "a#"
+	!scr "b-"
+	
+	*= $0400
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "                                        "
+	!scr "cutoff:00 resonance:00 filter:00        "
+	!scr "attack:00 decay:00 sustain:00 release:00"
+	!scr "waveform:pulse lp:00 bp:00 hp:00        "
+	!scr "key:000 octave:0 frequency:0000 vol:16  "

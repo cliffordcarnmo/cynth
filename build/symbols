@@ -1,18 +1,21 @@
 
 
-al C:0898 .irq
+al C:089d .irq
 al C:0046 .notehigh
-al C:0910 .updateui
-al C:0895 .mainloop
-al C:08f1 .playnote
-al C:08bf .keyup
-al C:08c5 .keydown
-al C:08dd .getnote
-al C:08cf .octaveup
+al C:0929 .updateui
+al C:004c .keypressed
+al C:089a .mainloop
+al C:090a .playnote
+al C:08cc .keyup
+al C:08d8 .keydown
+al C:004a .counter
+al C:08f6 .getnote
+al C:08e8 .octaveup
 al C:0048 .octave
 al C:1000 .frequencies
 al C:0042 .offset
-al C:08a9 .cynth
-al C:08d6 .octavedown
+al C:08ae .cynth
+al C:08ef .octavedown
 al C:0040 .keycode
 al C:0044 .notelow
+al C:1080 .keys
